@@ -69,6 +69,10 @@ let webConfig = {
             name: 'fonts/[name].[ext]'
           }
         }
+      },
+      {
+        test: /\.stylus$/,
+        use: ['style-loader', 'css-loader', 'stylus-loader']
       }
     ]
   },

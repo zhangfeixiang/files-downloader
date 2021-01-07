@@ -94,6 +94,10 @@ let rendererConfig = {
             name: 'fonts/[name]--[folder].[ext]'
           }
         }
+      },
+      {
+        test: /\.stylus$/,
+        use: ['style-loader', 'css-loader', 'stylus-loader']
       }
     ]
   },

@@ -52,7 +52,7 @@
         v-for="(it, index) in list"
         :key="index"
         :name="it.name"
-        :path="it.path"
+        :path="it.url"
         :progress="it.progress"
         :status="it.status"
         :size="it.size"

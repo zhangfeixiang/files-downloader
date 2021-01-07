@@ -23,6 +23,7 @@ export class Queue {
     }
 }
 
+
 /**
 * 根据url结构创建文件夹
 * @param basePath rquired 输出文件夹根目录
@@ -118,11 +119,7 @@ function calcProgress({ type, progress }) {
 
 export async function downloader({ img, basePath, path: _path }, cb = (op) => { }) {
     return new Promise(async (reslove, reject) => {
-        // const up = await upload(img, p => cb(calcProgress(p))).catch(error => (cb(calcProgress({ progress: 0, type: 'upload' })), error));
-        // console.log('up: ', up);
-        // if (up instanceof Error) return reject({ type: 'upload', error: up });
         const down = await download({ url: img, path: path.join(basePath, _path) }, p => cb(calcProgress(p))).catch(error => (cb(calcProgress({ progress: 0.66, type: 'download' })), error));
-
         if (down instanceof Error) return reject({ type: 'download', error: down, url: img });
         reslove(down);
     });
