@@ -69,7 +69,7 @@
 <script>
 import FileItem from "./FileItem.vue";
 import SystemInformation from "./LandingPage/SystemInformation";
-import { Queue, createFolders, download } from './../utils'
+import { Queue, createFolders, downloader, getFilename } from "./../utils";
 const { remote } = require("electron");
 const { dialog } = remote;
 const currentWindow = remote.getCurrentWindow();
@@ -90,8 +90,9 @@ export default {
 http://mwx.sanguosha.com/gamellk/res/ui/Level_atlas0.png
 http://mwx.sanguosha.com/gamellk/res/ui/Common.json
 http://mwx.sanguosha.com/gamellk/res/ui/Common_atlas0.png
-http://mwx.sanguosha.com/gamellk/res/ui/Common_lu8n2d.mp3`,
-      outputDir: "C:\\Users\\zfx\\Desktop\\test",
+http://mwx.sanguosha.com/gamellk/res/ui/Common_lu8n2d.mp3
+https://dss0.bdstatic.com/6Ox1bjeh1BF3odCf/it/u=209243573,2643790266&fm=218&app=92&f=PNG?w=121&h=75&s=49D1A3465BF09E4B124C2C030300B0C2`,
+      outputDir: "C:\\Users\\Administrator\\Desktop\\test",
     };
   },
   computed: {
@@ -103,7 +104,7 @@ http://mwx.sanguosha.com/gamellk/res/ui/Common_lu8n2d.mp3`,
     },
   },
   mounted() {
-    this.queue = new Queue(3)
+    this.queue = new Queue(3);
   },
   methods: {
     download() {
@@ -118,9 +119,13 @@ http://mwx.sanguosha.com/gamellk/res/ui/Common_lu8n2d.mp3`,
     startDownload() {
       this.downloading = true;
       this.showDownloadList = true;
-      this.list = this.checkUrls();
-      this.handleDownloadList(this.list.map(it => ({ name: it.name, path: it || '', size: 0 })));
-      
+      const list = this.checkUrls();
+      this.list = list.map((it) => ({
+        name: getFilename(it),
+        url: it,
+        size: 0,
+      }));
+      this.handleDownloadList([...this.list]);
     },
     async handleDownloadList(list) {
       for (const [index, linkUrl] of Object.entries(list)) {
@@ -129,15 +134,24 @@ http://mwx.sanguosha.com/gamellk/res/ui/Common_lu8n2d.mp3`,
       await this.queue.finish();
     },
     // it: string
-    async handleDownloadOne(url, index) {
-      this.$set(this.list, index, { ...this.list[index], error: undefined, path: url });
-      // img 是图片网址，path是下载到哪
-      createFolders(this.outputDir, url)
-      const res = await download({ img: url, path: temp }, data => this.$set(this.list, index, { ...this.list[index], ...data })).catch(
-        error => (this.$set(this.list, index, { ...this.list[index], error }), null)
-      );
+    async handleDownloadOne(it, index) {
+      this.$set(this.list, index, {
+        ...this.list[index],
+        error: undefined,
+      });
+      // 根据网址生成文件夹
+      createFolders(this.outputDir, it.url);
+      const temp = it.url.split("/").slice(3).join("/");
+      // img 是图片网址，basePath输出根目录，path是下载目录
+      const res = await downloader(
+        { img: it.url, basePath: this.outputDir, path: temp },
+        (data) => this.$set(this.list, index, { ...this.list[index], ...data })
+      ).catch((error) => (this.$set(this.list, index, { ...it, error }), null));
       if (!res) return;
-      this.$set(this.list, index, { ...this.list[index], surplus: res.output.size });
+      this.$set(this.list, index, {
+        ...this.list[index],
+        surplus: res.output.size,
+      });
     },
     handleCopys(list) {},
     handleReplaces(list) {},
@@ -151,7 +165,7 @@ http://mwx.sanguosha.com/gamellk/res/ui/Common_lu8n2d.mp3`,
     },
     checkUrls() {
       let { urls } = this;
-      if (!(urls || '').trim()) {
+      if (!(urls || "").trim()) {
         return [];
       }
       urls = urls.split(/\n/).filter((url) => {

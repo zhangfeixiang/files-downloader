@@ -1,5 +1,6 @@
 import fs from 'fs';
-import https from 'https';
+import https from 'http';
+import path from 'path'
 // 下载队列
 export class Queue {
     constructor(max = 2) {
@@ -28,14 +29,14 @@ export class Queue {
 * @param pathStr 图片网址
 * @return path 返回绝对路径
 */
-export function createFolders(basePath, pathStr, { needEmpty = false }) {
+export function createFolders(basePath, pathStr, { needEmpty } = { needEmpty: false }) {
     if (!basePath) {
         console.error('basePath cannot be empty')
         return
     };
 
     // http://xxx.xxx.com/xxx/xxx/xxx/filename.png
-    let dirs = pathStr.split('/').slice(3)
+    let dirs = pathStr.split('/').slice(3, -1)
     let currentPath = basePath
     dirs
         .forEach(dir => {
@@ -83,9 +84,51 @@ export function download({ url, path }, cb = (op) => { }) {
                     reject(new Error(buffs));
                 }
             });
-            res.on('error', reject);
+            res.on('error', (er) => {
+                reject(er)
+            });
         });
         req.on('error', reject);
         req.end();
     });
+}
+
+
+function calcProgress({ type, progress }) {
+    let p = 0;
+    if (type === 'upload') {
+        p = progress * 0.33;
+    } else if (type === 'compress') {
+        p = progress * 0.33 + 0.33;
+    } else {
+        p = progress * 0.34 + 0.66;
+    }
+
+    const status = p < 1 ? ['下载图片中'] : ['下载完成'];
+
+    console.log('status: ', ...status);
+    console.log(p);
+    const result = {
+        progress: p,
+        status
+    };
+    return result;
+}
+
+
+export async function downloader({ img, basePath, path: _path }, cb = (op) => { }) {
+    return new Promise(async (reslove, reject) => {
+        // const up = await upload(img, p => cb(calcProgress(p))).catch(error => (cb(calcProgress({ progress: 0, type: 'upload' })), error));
+        // console.log('up: ', up);
+        // if (up instanceof Error) return reject({ type: 'upload', error: up });
+        const down = await download({ url: img, path: path.join(basePath, _path) }, p => cb(calcProgress(p))).catch(error => (cb(calcProgress({ progress: 0.66, type: 'download' })), error));
+
+        if (down instanceof Error) return reject({ type: 'download', error: down, url: img });
+        reslove(down);
+    });
+}
+
+export function getFilename(img) {
+    if (!img) return '';
+    return img.split('/').slice(-1)[0]
 }
