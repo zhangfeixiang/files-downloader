@@ -1,20 +1,30 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\Administrator\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add http
+  C:\Program Files\nodejs\node.exe C:\Program Files\nodejs\node_modules\yarn\bin\yarn.js add stylus-loader
 
 PATH: 
-  C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64_win\compiler;C:\windows\system32;C:\windows;C:\windows\System32\Wbem;C:\windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\TortoiseSVN\bin;C:\Program Files\Git\cmd;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\TortoiseGit\bin;C:\WINDOWSSystem32;C:\WINDOWS\system32\config\systemprofile\.dnx\bin;C:\Program Files\Microsoft DNX\Dnvm\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Users\Administrator\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Users\Administrator\AppData\Local\Programs\Python\Python38\Scripts\;C:\Users\Administrator\AppData\Local\Programs\Python\Python38\;C:\Users\Administrator\.cargo\bin;C:\Users\Administrator\AppData\Local\Microsoft\WindowsApps;C:\Users\Administrator\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\Administrator\AppData\Roaming\npm;C:\Users\Administrator\AppData\Local\BypassRuntm;D:\sdk\flutter\bin;D:\sdk\jdk-13.0.2\bin;C:\Users\Administrator\AppData\Local\Android\Sdk;C:\Users\Administrator\AppData\Local\Android\Sdk\tools;C:\Users\Administrator\AppData\Local\Android\Sdk\platform-tools;C:\Users\Administrator\AppData\Roaming\nvm;C:\Program Files\nodejs
+  C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\TortoiseGit\bin;C:\Program Files\TortoiseSVN\bin;C:\Program Files\dotnet\;C:\Users\zfx\AppData\Roaming\nvm;C:\Program Files\nodejs;C:\Program Files (x86)\Lua\5.1;C:\Program Files (x86)\Lua\5.1\clibs;C:\Program Files\010 Editor;C:\Users\zfx\AppData\Local\Programs\Python\Python38\Scripts\;C:\Users\zfx\AppData\Local\Programs\Python\Python38\;C:\Users\zfx\.cargo\bin;C:\Users\zfx\AppData\Local\Microsoft\WindowsApps;C:\Users\zfx\AppData\Roaming\npm;D:\dev\PortableGit\bin;D:\dev\flutter\bin;C:\Users\zfx\AppData\Local\Android\Sdk\tools;C:\Users\zfx\AppData\Local\Android\Sdk\platform-tools;C:\Program Files\Java\jdk1.8.0_231\bin;C:\Users\zfx\AppData\Local\Android\Sdk\cmdline-tools\latest\bin;D:\工具\ffmpeg-20190502-7eba264-win64-static\bin;C:\Users\zfx\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\zfx\.dotnet\tools;C:\Users\zfx\AppData\Roaming\nvm;C:\Program Files\nodejs;D:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2020.2.3\bin;;
 
 Yarn version: 
   1.22.10
 
 Node version: 
-  12.16.3
+  12.14.1
 
 Platform: 
   win32 x64
 
 Trace: 
-  Error: ENOENT: no such file or directory, copyfile 'C:\Users\Administrator\AppData\Local\Yarn\Cache\v6\npm-fill-range-7.0.1-1919a6a7c75fe38b2c7c77e5198535da9acdda40-integrity\node_modules\fill-range\package.json' -> 'F:\github\files-downloader\node_modules\fast-glob\node_modules\fill-range\package.json'
+  Error: https://registry.npm.taobao.org/@nodelib/fs.stat/download/@nodelib/fs.stat-2.0.4.tgz?cache=0&sync_timestamp=1609074523193&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40nodelib%2Ffs.stat%2Fdownload%2F%40nodelib%2Ffs.stat-2.0.4.tgz: Request failed "500 Internal Server Error"
+      at ResponseError.ExtendableBuiltin (C:\Users\zfx\AppData\Roaming\nvm\v12.14.1\node_modules\yarn\lib\cli.js:696:66)
+      at new ResponseError (C:\Users\zfx\AppData\Roaming\nvm\v12.14.1\node_modules\yarn\lib\cli.js:802:124)
+      at Request.<anonymous> (C:\Users\zfx\AppData\Roaming\nvm\v12.14.1\node_modules\yarn\lib\cli.js:67058:16)
+      at Request.emit (events.js:223:5)
+      at Request.module.exports.Request.onRequestResponse (C:\Users\zfx\AppData\Roaming\nvm\v12.14.1\node_modules\yarn\lib\cli.js:141539:10)
+      at ClientRequest.emit (events.js:223:5)
+      at HTTPParser.parserOnIncomingClient [as onIncoming] (_http_client.js:583:27)
+      at HTTPParser.parserOnHeadersComplete (_http_common.js:115:17)
+      at TLSSocket.socketOnData (_http_client.js:456:22)
+      at TLSSocket.emit (events.js:223:5)
 
 npm manifest: 
   {

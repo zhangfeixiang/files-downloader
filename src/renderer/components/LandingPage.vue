@@ -21,11 +21,11 @@
           <div class="dir-text">{{ outputDir }}</div>
         </div>
         <div class="flex">
-          <el-badge :value="taskNum">
+          <el-badge :value="info.sum">
             <el-button
               size="mini"
               type="primary"
-              :disabled="taskNum < 1"
+              :disabled="info.sum < 1"
               @click="showDownloadList = true"
               >下载列表</el-button
             >
@@ -43,25 +43,26 @@
         </div>
       </div>
     </footer>
-    <el-dialog
-      fullscreen
-      :title="downloadInfo"
-      :visible.sync="showDownloadList"
-    >
-      <file-item
-        v-for="(it, index) in list"
-        :key="index"
-        :name="it.name"
-        :path="it.url"
-        :progress="it.progress"
-        :status="it.status"
-        :size="it.size"
-        :surplus="it.surplus"
-        :error="it.error"
-        @retry="handleDownloadOne(it, index)"
-        @copy="handleCopys([it])"
-        @replace="handleReplaces([it])"
-      />
+    <el-dialog fullscreen title="下载列表" :visible.sync="showDownloadList">
+      <div>
+        总计{{ info.sum }} 成功 {{ info.success }} 失败 {{ info.error }}
+      </div>
+      <el-scrollbar wrap-class="scrollbar-wrapper">
+        <file-item
+          v-for="(it, index) in list"
+          :key="it.url"
+          :name="it.name"
+          :path="it.url"
+          :progress="it.progress"
+          :status="it.status"
+          :size="it.size"
+          :surplus="it.surplus"
+          :error="it.error"
+          @retry="handleDownloadOne(it, index)"
+          @copy="handleCopys([it])"
+          @replace="handleReplaces([it])"
+        />
+      </el-scrollbar>
     </el-dialog>
   </div>
 </template>
@@ -69,7 +70,13 @@
 <script>
 import FileItem from "./FileItem.vue";
 import SystemInformation from "./LandingPage/SystemInformation";
-import { Queue, createFolders, downloader, getFilename } from "./../utils";
+import {
+  Queue,
+  createFolders,
+  downloader,
+  throttle,
+  getFilename,
+} from "./../utils";
 const { remote } = require("electron");
 const { dialog } = remote;
 const currentWindow = remote.getCurrentWindow();
@@ -86,21 +93,21 @@ export default {
       downloading: false,
       showDownloadList: false,
       list: [],
-      urls: `http://mwx.sanguosha.com/gamellk/res/ui/Game_atlas0_1.png
-http://mwx.sanguosha.com/gamellk/res/ui/Level_atlas0.png
-http://mwx.sanguosha.com/gamellk/res/ui/Common.json
-http://mwx.sanguosha.com/gamellk/res/ui/Common_atlas0.png
-http://mwx.sanguosha.com/gamellk/res/ui/Common_lu8n2d.mp3
-https://dss0.bdstatic.com/6Ox1bjeh1BF3odCf/it/u=209243573,2643790266&fm=218&app=92&f=PNG?w=121&h=75&s=49D1A3465BF09E4B124C2C030300B0C2`,
-      outputDir: "C:\\Users\\Administrator\\Desktop\\test",
+      urls: ``,
+      outputDir: "C:\\Users\\zfx\\Desktop\\test",
     };
   },
   computed: {
-    taskNum() {
-      return this.list.length;
-    },
-    downloadInfo() {
-      return `正在下载：2/${this.taskNum}`;
+    info() {
+      const sum = this.list.length;
+      const success = this.list.filter((it) => it.progress === 1);
+      const error = this.list.filter((it) => it.error);
+      return {
+        sum,
+        complate: (success.length / sum) * 100 || 0,
+        success: success.length,
+        error: error.length,
+      };
     },
   },
   mounted() {
@@ -132,6 +139,7 @@ https://dss0.bdstatic.com/6Ox1bjeh1BF3odCf/it/u=209243573,2643790266&fm=218&app=
         await this.queue.push(this.handleDownloadOne(linkUrl, Number(index)));
       }
       await this.queue.finish();
+      this.downloading = false;
     },
     // it: string
     async handleDownloadOne(it, index) {
@@ -143,9 +151,12 @@ https://dss0.bdstatic.com/6Ox1bjeh1BF3odCf/it/u=209243573,2643790266&fm=218&app=
       createFolders(this.outputDir, it.url);
       const temp = it.url.split("/").slice(3).join("/");
       // img 是图片网址，basePath输出根目录，path是下载目录
+      function updateProgress(data, that) {
+        that.$set(that.list, index, { ...that.list[index], ...data });
+      }
       const res = await downloader(
         { img: it.url, basePath: this.outputDir, path: temp },
-        (data) => this.$set(this.list, index, { ...this.list[index], ...data })
+        (data) => throttle(updateProgress, 1000)(data, this)
       ).catch((error) => (this.$set(this.list, index, { ...it, error }), null));
       if (!res) return;
       this.$set(this.list, index, {
