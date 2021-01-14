@@ -76,7 +76,9 @@ export function download({ url, path }, cb = (op) => { }) {
             const size = Number(res.headers['content-length']);
             let buffs = 0;
             // 删除文件，防止被追加进去
-            fs.unlinkSync(path);
+            if(fs.existsSync(path)) {
+                fs.unlinkSync(path);
+            }
             let downloadfile = fs.createWriteStream(path, { 'flags': 'a'});
             res.setEncoding('binary');
             res.on('data', buf => {
@@ -92,6 +94,7 @@ export function download({ url, path }, cb = (op) => { }) {
                     }
                     console.log('写入文件到：', path)
                     downloadfile.end();
+                    resolove()
                     // fs.writeFile(path, buffs, 'binary', err => (err ? reject(err) : resolove()));
                 } else {
                     cb({ progress: 0, type: 'download' });
