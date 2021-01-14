@@ -94,7 +94,7 @@ export default {
       showDownloadList: false,
       list: [],
       urls: ``,
-      outputDir: "C:\\Users\\zfx\\Desktop\\test",
+      outputDir: "",
     };
   },
   computed: {
