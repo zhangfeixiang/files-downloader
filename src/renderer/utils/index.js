@@ -71,20 +71,20 @@ export function download({ url, path }, cb = (op) => { }) {
     const [protocol] = url.split('://')
     const request = { http, https }
     return new Promise((resolove, reject) => {
-        cb({ progress: 0, type: 'download' });
+        cb({ filePath: path, progress: 0, type: 'download' });
         const req = request[protocol].get(url, res => {
             const size = Number(res.headers['content-length']);
             let buffs = 0;
             // 删除文件，防止被追加进去
-            if(fs.existsSync(path)) {
+            if (fs.existsSync(path)) {
                 fs.unlinkSync(path);
             }
-            let downloadfile = fs.createWriteStream(path, { 'flags': 'a'});
+            let downloadfile = fs.createWriteStream(path, { 'flags': 'a' });
             res.setEncoding('binary');
             res.on('data', buf => {
                 buffs += buf.length;
                 downloadfile.write(buf, 'binary');
-                cb({ progress: buffs / size, type: 'download' });
+                cb({ filePath: path, progress: buffs / size, type: 'download' });
             });
             res.on('end', () => {
                 const { statusCode = 0 } = res;
@@ -97,12 +97,12 @@ export function download({ url, path }, cb = (op) => { }) {
                     resolove()
                     // fs.writeFile(path, buffs, 'binary', err => (err ? reject(err) : resolove()));
                 } else {
-                    cb({ progress: 0, type: 'download' });
+                    downloadfile.end();
+                    if (fs.existsSync(path)) {
+                        fs.unlinkSync(path);
+                    }
                     reject(new Error(buffs));
                 }
-            });
-            res.on('error', (er) => {
-                reject(er)
             });
         });
         req.on('error', reject);
@@ -111,15 +111,42 @@ export function download({ url, path }, cb = (op) => { }) {
 }
 
 
-function calcProgress({ type, progress }) {
+function calcProgress({ type, progress, filePath }) {
     const status = progress < 1 ? ['下载中'] : ['下载完成'];
     console.log('status: ', ...status);
     console.log(progress);
     const result = {
         progress,
-        status
+        status,
+        filePath
     };
     return result;
+}
+
+
+export async function downloader({ img, basePath, path: _path }, cb = (op) => { }) {
+    return new Promise(async (reslove, reject) => {
+        const down = await download({ url: img, path: path.join(basePath, _path) }, p => {
+            cb(calcProgress(p))
+        }).catch((error) => {
+            cb({
+                progress: 0,
+                status: ['下载失败'],
+            })
+            return error
+        });
+        if (down instanceof Error) return reject({ type: 'download', error: down, url: img });
+        reslove(down);
+    });
+}
+
+export function getFilename(img) {
+    if (!img) return '';
+    let filename = img.split('/').slice(-1)[0] || 'null'
+    if (filename.indexOf('?') > -1) {
+        filename = filename.substr(0, filename.indexOf('?'))
+    }
+    return filename
 }
 
 export function throttle(func, delay) {
@@ -140,23 +167,6 @@ export function throttle(func, delay) {
     }
 }
 
-
-export async function downloader({ img, basePath, path: _path }, cb = (op) => { }) {
-    return new Promise(async (reslove, reject) => {
-        const down = await download({ url: img, path: path.join(basePath, _path) }, p => cb(calcProgress(p))).catch(error => (console.error(error), error));
-        if (down instanceof Error) return reject({ type: 'download', error: down, url: img });
-        reslove(down);
-    });
-}
-
-export function getFilename(img) {
-    if (!img) return '';
-    let filename = img.split('/').slice(-1)[0] || 'null'
-    if (filename.indexOf('?') > -1) {
-        filename = filename.substr(0, filename.indexOf('?'))
-    }
-    return filename
-}
 
 
 export async function isGif(file) {

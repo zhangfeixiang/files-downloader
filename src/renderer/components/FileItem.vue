@@ -14,6 +14,8 @@
 
     <p class="item__tag">
       <span v-for="(it, index) in status" :key="index">{{ it }}</span>
+      <span v-if="!error && progress === 1" @click="$emit('file')">打开文件</span>
+      <span v-if="!error && progress === 1" @click="$emit('dir')">打开文件夹</span>
     </p>
   </li>
 </template>
@@ -57,6 +59,12 @@ export default {
   },
 };
 </script>
+
+<style>
+.item__tag{
+  cursor: pointer;
+}
+</style>
 
 
 <style lang="stylus">

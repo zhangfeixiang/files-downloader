@@ -59,8 +59,8 @@
           :surplus="it.surplus"
           :error="it.error"
           @retry="handleDownloadOne(it, index)"
-          @copy="handleCopys([it])"
-          @replace="handleReplaces([it])"
+          @file="handleOpenFile(it)"
+          @dir="handleOpenResource(it)"
         />
       </el-scrollbar>
     </el-dialog>
@@ -77,7 +77,7 @@ import {
   throttle,
   getFilename,
 } from "./../utils";
-const { remote } = require("electron");
+const { remote, shell } = require("electron");
 const { dialog } = remote;
 const currentWindow = remote.getCurrentWindow();
 export default {
@@ -164,8 +164,12 @@ export default {
         surplus: res.output.size,
       });
     },
-    handleCopys(list) {},
-    handleReplaces(list) {},
+    handleOpenFile(it) {
+      shell.openItem(it.filePath)
+    },
+    handleOpenResource(it) {
+      shell.showItemInFolder(it.filePath)
+    },
     handleChooseDir() {
       var paths = dialog.showOpenDialog(currentWindow, {
         title: "选择目录",
