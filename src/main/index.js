@@ -14,7 +14,7 @@ const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
-function createWindow () {
+function createWindow() {
   // 隐藏菜单栏 
   Menu.setApplicationMenu(null)
   /**
@@ -26,10 +26,50 @@ function createWindow () {
     width: 1000
   })
 
+  // Electron在mac下快捷键失效的问题及解决
+  if (process.platform === 'darwin') {
+    let contents = mainWindow.webContents
+    globalShortcut.register('CommandOrControl+C', () => {
+      contents.copy()
+    })
+    globalShortcut.register('CommandOrControl+V', () => {
+      contents.paste()
+    })
+    globalShortcut.register('CommandOrControl+X', () => {
+      contents.cut()
+    })
+    globalShortcut.register('CommandOrControl+A', () => {
+      contents.selectAll()
+    })
+  }
+
   mainWindow.loadURL(winURL)
 
   mainWindow.on('closed', () => {
     mainWindow = null
+  })
+
+  // Electron在mac下快捷键失效的问题及解决
+  mainWindow.on('focus', () => {
+    // mac下快捷键失效的问题
+    if (process.platform === 'darwin') {
+      let contents = mainWindow.webContents
+      globalShortcut.register('CommandOrControl+C', () => {
+        contents.copy()
+      })
+      globalShortcut.register('CommandOrControl+V', () => {
+        contents.paste()
+      })
+      globalShortcut.register('CommandOrControl+X', () => {
+        contents.cut()
+      })
+      globalShortcut.register('CommandOrControl+A', () => {
+        contents.selectAll()
+      })
+    }
+  })
+  mainWindow.on('blur', () => {
+    globalShortcut.unregisterAll() // 注销键盘事件
   })
 }
 
