@@ -8,6 +8,10 @@
 3.多任务同时下载
 4.可直接已下载打开文件/文件夹
 
+客户端下载
+[Windows](https://github.com/zhangfeixiang/files-downloader/releases/download/v1.0.0/URL-Downloader.Setup.1.0.0.exe)
+[Mac](https://github.com/zhangfeixiang/files-downloader/releases/download/v1.0.0/URL-Downloader.-1.0.0.pkg)
+
 #### Build Setup
 
 ``` bash
