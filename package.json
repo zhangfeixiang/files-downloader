@@ -1,6 +1,6 @@
 {
   "name": "files-downloader",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "author": "小鱼儿",
   "description": "通过网址批量下载并根据路径生成文件目录工具。",
   "license": null,
@@ -41,7 +41,8 @@
       ]
     },
     "mac": {
-      "icon": "build/icons/icon.icns"
+      "icon": "build/icons/icon.icns",
+      "target": "pkg"
     },
     "win": {
       "icon": "build/icons/icon.ico"
