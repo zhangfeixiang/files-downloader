@@ -17,8 +17,8 @@
     "postinstall": ""
   },
   "build": {
-    "productName": "files-downloader",
-    "appId": "com.example.yourapp",
+    "productName": "URL批量下载",
+    "appId": "95E5EF70D9B645B0A95A38B881807368",
     "directories": {
       "output": "build"
     },
